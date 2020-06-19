@@ -1,0 +1,19 @@
+<?php
+if(isset($success[0])) {
+	$sucess_display = 'block';
+} else {
+	$sucess_display = 'none';
+}
+if(isset($warning[0])) {
+	$warning_display = 'block';
+} else {
+	$warning_display = 'none';
+}
+	
+?>
+<div class="alert alert-success" style="display: <?= $sucess_display ?>" role="alert">
+	<?= $success[0] ?> !
+</div>
+<div class="alert alert-danger" style="display: <?= $warning_display ?>" role="alert">
+  <?= $warning[0] ?> !
+</div>

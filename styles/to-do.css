@@ -1,0 +1,50 @@
+body {
+	background-color: #f5f5f5;
+}
+header {
+	display: flex;
+	justify-content: space-between;
+	background: #343a40;
+	padding: 10px;
+	font-size: 18px;
+	color: white;
+}
+.wrapper {
+	max-width: 600px;
+	margin: 10% auto;
+}
+.task {
+	padding: 10px;
+	font-size: 20px;
+	border: 1px solid #dbdbdb;
+	border-radius: 5px;
+	margin: 1px 0;
+	background: white;
+}
+.btns, .task-text , .done{
+	display: inline-block;
+}
+.btns {
+	float: right;
+	margin-top: -3px;
+}
+.form-group{
+	margin-left: -10px;
+}
+.add-form{
+	margin: 10px 0;
+	position: relative;
+}
+.text-aria {
+	width: calc(100% - 62px);
+	display: inline-block;
+	position: absolute;
+	top: 50%;
+}
+.add {
+	display: inline-block;
+	position: absolute;
+	top: 50%;
+	right: 0;
+	width: 60px;
+}
