@@ -48,3 +48,7 @@ header {
 	right: 0;
 	width: 60px;
 }
+.task-done
+{
+	text-decoration: line-through;
+}
