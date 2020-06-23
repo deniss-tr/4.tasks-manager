@@ -46,6 +46,15 @@ function addTasks($text, $user_id, $status, $myPDO)
 		return false;
 	return $lastRowid;
 }
+
+function editTask($id, $user_id, $text, $status, $myPDO)
+{
+	$res = $myPDO->query("UPDATE tasks SET status = '$status', task = '$text' WHERE $user_id = user_id AND $id = id");
+	if(!$res)
+		return false;
+	return true;
+}
+
 function deleteTask($id, $user_id, $myPDO)
 {
 	$res = $myPDO->query("DELETE FROM tasks WHERE $user_id = user_id AND $id = id");

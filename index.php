@@ -102,6 +102,17 @@ $app->post('/tasks', function ($request, $response) use ($myPDO) {
 
 	//$this->get('flash')->addMessage('warning', $message);
 });
+
+$app->patch('/tasks/{id}', function ($request, $response, array $args) use ($myPDO) {
+  $id = $args['id'];
+  $user_id = $_SESSION["session_user_id"];
+  $text = $request->getParsedBodyParam('text');
+  $status = $request->getParsedBodyParam('status');
+
+  $data = editTask($id, $user_id, $text, $status, $myPDO);
+  return $response->withJson($data);
+});
+
 $app->delete('/tasks/{id}', function ($request, $response, array $args) use ($myPDO) {
   $id = $args['id'];
   $user_id = $_SESSION["session_user_id"];

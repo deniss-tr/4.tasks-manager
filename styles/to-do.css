@@ -52,3 +52,14 @@ header {
 {
 	text-decoration: line-through;
 }
+.edit-btn{
+	border: none;
+	color: #007bff;
+	background: none;
+}
+.edit-text-input{
+	border: 1px solid gray;
+}
+.hide{
+	display: none;
+}

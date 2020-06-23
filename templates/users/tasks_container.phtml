@@ -1,18 +1,21 @@
 <?php foreach($tasks as $task): ?>
+  <?php $active = $task['status'] == 'task-done' ? 'active' : '' ?>
 <div class="task">
-  <div class="task-text <?= $task['status']?>"><?= $task['task']?></div>
-  <div class="btns" task_id="<?= $task['id'] ?>" user_id="<?= $task['user_id'] ?>" >
-  <div class="btn-group-toggle done" data-toggle="buttons">
-    <label class="btn btn-outline-success">
-      <input type="checkbox" data-toggle="buttons"><i class="fa fa-check" aria-hidden="true"></i>
-    </label>
+  <div class="task-text <?= $task['status']?>">
+    <div class="task-text-inner"><?= $task['task']?></div>
+    <div class="edit-form-div hide">
+      <form class="edit-form" method="post" action="/tasks">
+        <input type="hidden" name="_METHOD" value="PATCH">
+        <button type="submit" class="edit-btn"><i class="fa fa-check-circle"></i></button>
+        <input type="text" value="<?= $task['task']?>" class="edit-text-input" name='task-edit-text' required>
+      </form>
+    </div>
   </div>
-  <a href="#" class="btn btn-outline-warning" role="button" aria-pressed="true">
-    <i class="fa fa-pencil" aria-hidden="true"></i>
-  </a>
-  <a href="#" class="btn btn-outline-danger" role="button" aria-pressed="true">
-    <i class="fa fa-trash" aria-hidden="true"></i>
-  </a>
+
+  <div class="btns" task_id="<?= $task['id'] ?>" user_id="<?= $task['user_id'] ?>" >
+    <button type="button" class="btn btn-outline-success <?= $active ?>"><i class="fa fa-check" aria-hidden="true"></i></button>
+    <button type="button" class="btn btn-outline-warning"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+    <button type="button" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
   </div>
 </div>
 <?php endforeach; ?>
