@@ -25,11 +25,17 @@ session_start();
 	</header>
 
     <div class="wrapper">
+	<?php 
+	if( $_SESSION['session_user_status'] == 'admin'):
+	?>
+		<a href="/admin">Back to admin panel</a>
+	<?php
+	endif;	
+	?>
 		<div class="title">
 		  <h1>To-do List</h1>
 		</div>
     <div class="task-list">
-
       <?php include "tasks_container.phtml"; ?>
 
     </div>

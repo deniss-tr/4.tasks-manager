@@ -1,0 +1,30 @@
+  <h2>All tasks from user Den</h2>
+  <div class="table-responsive">
+	<table class="table table-striped">
+	  <thead>
+		<tr>
+		  <th>#</th>
+		  <th>Task ID</th>
+		  <th>Text</th>
+		  <th>Status</th>
+		</tr>
+	  </thead>
+	  <tbody>
+	<?php 
+	
+	$i = 0;
+	for($a = 0; $a < 5; $a++):
+	$i++;
+	?>
+	
+		<tr>
+		  <td><?= $i ?></td>
+		  <td>10</td>
+		  <td>text Text text</td>
+		  <td>done</td>
+		</tr>
+	<?php endfor; ?>
+
+	  </tbody>
+	</table>
+  </div>
