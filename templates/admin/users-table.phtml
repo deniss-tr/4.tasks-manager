@@ -1,0 +1,36 @@
+  <h2>All users</h2>
+  <div class="table-responsive">
+	<table class="table table-striped">
+	  <thead>
+		<tr>
+		  <th>#</th>
+		  <th>ID</th>
+		  <th>Login</th>
+		  <th>Password (hash)</th>
+		  <th>Tasks</th>
+		  <th>Status</th>
+		  <th>Delete</th>
+		</tr>
+	  </thead>
+	  <tbody>
+	<?php 
+	
+	$i = 0;
+	foreach($users as $user):
+	$i++;
+	?>
+	
+		<tr>
+		  <td><?= $i ?></td>
+		  <td class="td-id"><?= $user['id'] ?></td>
+		  <td class="td-login"><?= $user['login'] ?></td>
+		  <td><?= $user['password'] ?></td>
+		  <td><a href="/admin/tasks">( <?= count($user['tasks']) ?> )</a></td>
+		  <td class="td-status"><button type="button" class="btn btn-info btn-sm status-btn" data-toggle="modal" data-target="#statusModal"><?= $user['status'] ?></button></td>
+		  <td><button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#deleteModal">delete</button></td>
+		</tr>
+	<?php endforeach; ?>
+
+	  </tbody>
+	</table>
+  </div>
