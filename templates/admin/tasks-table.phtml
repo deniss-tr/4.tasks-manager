@@ -1,4 +1,4 @@
-  <h2>All tasks from user Den</h2>
+  <h2>All tasks from user <?= $user['login'] ?></h2>
   <div class="table-responsive">
 	<table class="table table-striped">
 	  <thead>
@@ -10,20 +10,20 @@
 		</tr>
 	  </thead>
 	  <tbody>
-	<?php 
-	
+	<?php
+
 	$i = 0;
-	for($a = 0; $a < 5; $a++):
+	foreach($tasks as $task):
 	$i++;
 	?>
-	
+
 		<tr>
 		  <td><?= $i ?></td>
-		  <td>10</td>
-		  <td>text Text text</td>
-		  <td>done</td>
+		  <td><?= $task['id'] ?></td>
+		  <td><?= $task['task'] ?></td>
+		  <td><?= $task['status'] == '' ? 'not performed' : 'done' ?></td>
 		</tr>
-	<?php endfor; ?>
+	<?php endforeach; ?>
 
 	  </tbody>
 	</table>

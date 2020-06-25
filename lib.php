@@ -46,6 +46,12 @@ function getUserTasks($id, $myPDO)
 	$rows = $myPDO->query($query)->fetchAll();
 	return $rows;
 }
+function getUser($id, $myPDO)
+{
+  $query = "SELECT * FROM users WHERE $id = id";
+  $row = $myPDO->query($query)->fetch();
+  return $row;
+}
 function addTasks($text, $user_id, $status, $myPDO)
 {
 	$text = trim($text);
@@ -76,14 +82,14 @@ function deleteTask($id, $user_id, $myPDO)
 /////////////////////// admin
 
 function getAllUsers($myPDO)
-{	
+{
 	$sql = "SELECT * FROM users";
 	$users = $myPDO->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-	
+
 	$sql = 'SELECT tasks.*, users.id as userId, users.login, users.password, users.status
 		FROM tasks LEFT JOIN users ON tasks.user_id = users.id';
 	$rows = $myPDO->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-	
+
 	$arr = [];
 	foreach($rows as $row) {
 		$arr[$row['userId']][] = $row;
@@ -93,32 +99,30 @@ function getAllUsers($myPDO)
 		$user['tasks'] = $arr[$user['id']];
 		return $user;
 	},$users);
-	
+
 	return $usersWithTasks;
 }
 function deleteUser($userId, $myPDO)
 {
 	$myPDO->query("DELETE FROM tasks WHERE $userId = user_id");
 	$res = $myPDO->query("DELETE FROM users WHERE $userId = id");
-	
+
 	if(!$res)
 		return false;
 
 	return true;
 }
 
-function changeStatus($userId, $myPDO) 
+function changeStatus($userId, $myPDO)
 {
 	$res = $myPDO->query("
 		UPDATE users SET status = CASE
 			WHEN status = 'admin' THEN 'user'
 			WHEN status = 'user' THEN 'admin'
-		END 
+		END
 		WHERE $userId = id
 	");
 	if(!$res)
 		return false;
 	return true;
 }
-
-

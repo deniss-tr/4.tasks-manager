@@ -64,7 +64,7 @@ $app->post('/login', function ($request, $response) use ($myPDO) {
 	global $message;
 	$login = $request->getParsedBodyParam('login');
 	$password = $request->getParsedBodyParam('password');
-	
+
 	if(!$login or !$password) {
 		return $response->write("Empty login or password, back to  <a href='/register'>register</a>");
 	}
@@ -72,7 +72,7 @@ $app->post('/login', function ($request, $response) use ($myPDO) {
 	$user = login($myPDO, $login, $password);
 	$user_id = $user['id'];
 	$user_status = $user['status'];
-	
+
 	if(!$user_id){
 		$this->get('flash')->addMessage('warning', $message);
 		return $response->withRedirect('/login', 301);
@@ -81,11 +81,11 @@ $app->post('/login', function ($request, $response) use ($myPDO) {
 	$_SESSION["session_login"] = $login;
 	$_SESSION["session_user_id"] = $user_id;
 	$_SESSION["session_user_status"] = $user_status;
-	
+
 	if($user_status == 'admin') {
 		return $response->withRedirect('/admin', 301);
 	}
-	
+
 	return $response->withRedirect('/tasks', 301);
 });
 $app->get('/logout', function ($request, $response) {
@@ -103,6 +103,7 @@ $app->get('/tasks', function ($request, $response) use ($myPDO){
 	}
   $tasks = getUserTasks($_SESSION['session_user_id'], $myPDO);
   $arr = ['tasks' => $tasks];
+
 	return $this->get('renderer')->render($response, 'users/tasks.php', $arr);
 });
 $app->post('/tasks', function ($request, $response) use ($myPDO) {
@@ -134,34 +135,35 @@ $app->delete('/tasks/{id}', function ($request, $response, array $args) use ($my
   return $response->withJson($data);
 });
 
-//////////////// admin 
+//////////////// admin
 $app->get('/admin', function ($request, $response) use ($myPDO) {
 	if(!isset($_SESSION["session_login"])){
 		return $response->withRedirect('/login', 301);
 	}
 	if($_SESSION['session_user_status'] != 'admin'){
 		return $response->write("access denied, back to <a href='/'>homepage</a>");
-	}		
+	}
     $users = getAllUsers($myPDO);
     $arr = ['users' => $users];
     return $this->get('renderer')->render($response, 'admin/admin.php', $arr);
 });
 
-$app->get('/admin/tasks', function ($request, $response) use ($myPDO) {
-	if(!isset($_SESSION["session_login"])){
-		return $response->withRedirect('/login', 301);
-	}
+$app->get('/admin/tasks/{id}', function ($request, $response, array $args) use ($myPDO) {
 	if($_SESSION['session_user_status'] != 'admin'){
 		return $response->write("access denied, back to <a href='/'>homepage</a>");
-	}		
+	}
+  $userId = $args['id'];
+  $tasks = getUserTasks($userId, $myPDO);
+  $user = getUser($userId, $myPDO);
+  $arr = ['tasks' => $tasks, 'user' => $user];
 
-    return $this->get('renderer')->render($response, 'admin/user-tasks.php');
+  return $this->get('renderer')->render($response, 'admin/user-tasks.php', $arr);
 });
 
 $app->delete('/admin/{id}', function ($request, $response, array $args) use ($myPDO) {
 
 	$userId = $args['id'];
-	
+
 	$result = deleteUser($userId, $myPDO);
 	if(!$result){
 		return $response->write("Error deleting user");
@@ -173,7 +175,7 @@ $app->delete('/admin/{id}', function ($request, $response, array $args) use ($my
 $app->patch('/admin/{id}', function ($request, $response, array $args) use ($myPDO) {
 
 	$userId = $args['id'];
-	
+
 	$result = changeStatus($userId, $myPDO);
 	if(!$result){
 		return $response->write("Error changing status");
