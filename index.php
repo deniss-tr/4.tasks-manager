@@ -1,13 +1,14 @@
 <?php
 $myPDO = new PDO('sqlite:tasks.db');
 require_once("lib.php");
+require_once __DIR__ . '/vendor/autoload.php';
 
 use Slim\Factory\AppFactory;
 use DI\Container;
 use Slim\Middleware\MethodOverrideMiddleware;
-require 'vendor/autoload.php';
 
 session_start();
+
 $container = new Container();
 $container->set('renderer', function () {
     return new Slim\Views\PhpRenderer(__DIR__ . '/templates');
@@ -19,7 +20,9 @@ $container->set('flash', function () {
 $app = AppFactory::createFromContainer($container);
 $app->addErrorMiddleware(true, true, true);
 $app->add(MethodOverrideMiddleware::class);
-$message = 'init';
+$message = '';
+
+//////////// root controller
 
 $app->get('/', function ($request, $response) {
 	if(!isset($_SESSION["session_login"])){
@@ -31,6 +34,7 @@ $app->get('/', function ($request, $response) {
 		return $response->withRedirect('/tasks', 301);
 	}
 });
+//////////// registration - authorization
 $app->get('/login', function ($request, $response) {
 	$flash = $this->get('flash')->getMessages();
     return $this->get('renderer')->render($response, 'login.php', $flash);
@@ -43,6 +47,7 @@ $app->get('/register', function ($request, $response) {
 
 $app->post('/register', function ($request, $response) use ($myPDO) {
 	global $message;
+	
 	$login = $request->getParsedBodyParam('login');
 	$password = $request->getParsedBodyParam('password');
 	$password = md5(md5($password).'todo');
@@ -64,6 +69,7 @@ $app->post('/login', function ($request, $response) use ($myPDO) {
 	global $message;
 	$login = $request->getParsedBodyParam('login');
 	$password = $request->getParsedBodyParam('password');
+	$checkbox = $request->getParsedBodyParam('login-checkbox');
 
 	if(!$login or !$password) {
 		return $response->write("Empty login or password, back to  <a href='/register'>register</a>");
@@ -81,6 +87,11 @@ $app->post('/login', function ($request, $response) use ($myPDO) {
 	$_SESSION["session_login"] = $login;
 	$_SESSION["session_user_id"] = $user_id;
 	$_SESSION["session_user_status"] = $user_status;
+	
+	if($checkbox == true){
+		$params = session_get_cookie_params();
+		setcookie(session_name(), $_COOKIE[session_name()], time() + 60*60*24*30);
+	}
 
 	if($user_status == 'admin') {
 		return $response->withRedirect('/admin', 301);
@@ -93,49 +104,55 @@ $app->get('/logout', function ($request, $response) {
 	unset($_SESSION['session_login']);
 	unset($_SESSION['session_user_id']);
 	unset($_SESSION['session_user_status']);
+	unset($_COOKIE[session_name()]);
+	setcookie(session_name(), null, -1, '/');
 	session_destroy();
 
     return $response->withRedirect('/login', 301);
 });
+
+//////////// Tasks List (AJAX)
+
 $app->get('/tasks', function ($request, $response) use ($myPDO){
 	if(!isset($_SESSION["session_login"])){
 		return $response->withRedirect('/login', 301);
 	}
-  $tasks = getUserTasks($_SESSION['session_user_id'], $myPDO);
-  $arr = ['tasks' => $tasks];
+    $tasks = getUserTasks($_SESSION['session_user_id'], $myPDO);
+    $arr = ['tasks' => $tasks];
 
 	return $this->get('renderer')->render($response, 'users/tasks.php', $arr);
 });
 $app->post('/tasks', function ($request, $response) use ($myPDO) {
 
-  $text = $request->getParsedBodyParam('text');
-  $status = $request->getParsedBodyParam('status');
-  $user_id = $_SESSION["session_user_id"];
-  $taskId = addTasks($text, $user_id, $status, $myPDO);
+    $text = $request->getParsedBodyParam('text');
+    $status = $request->getParsedBodyParam('status');
+    $user_id = $_SESSION["session_user_id"];
+    $taskId = addTasks($text, $user_id, $status, $myPDO);
 	$data = ['task_id' => $taskId[0], 'user_id' => $user_id];
 	return $response->withJson($data);
 
 });
 
 $app->patch('/tasks/{id}', function ($request, $response, array $args) use ($myPDO) {
-  $id = $args['id'];
-  $user_id = $_SESSION["session_user_id"];
-  $text = $request->getParsedBodyParam('text');
-  $status = $request->getParsedBodyParam('status');
+	$id = $args['id'];
+	$user_id = $_SESSION["session_user_id"];
+	$text = $request->getParsedBodyParam('text');
+	$status = $request->getParsedBodyParam('status');
 
-  $data = editTask($id, $user_id, $text, $status, $myPDO);
-  return $response->withJson($data);
+	$data = editTask($id, $user_id, $text, $status, $myPDO);
+	return $response->withJson($data);
 });
 
 $app->delete('/tasks/{id}', function ($request, $response, array $args) use ($myPDO) {
-  $id = $args['id'];
-  $user_id = $_SESSION["session_user_id"];
+	$id = $args['id'];
+	$user_id = $_SESSION["session_user_id"];
 
-  $data = deleteTask($id, $user_id, $myPDO);
-  return $response->withJson($data);
+	$data = deleteTask($id, $user_id, $myPDO);
+	return $response->withJson($data);
 });
 
 //////////////// admin
+
 $app->get('/admin', function ($request, $response) use ($myPDO) {
 	if(!isset($_SESSION["session_login"])){
 		return $response->withRedirect('/login', 301);
@@ -152,12 +169,12 @@ $app->get('/admin/tasks/{id}', function ($request, $response, array $args) use (
 	if($_SESSION['session_user_status'] != 'admin'){
 		return $response->write("access denied, back to <a href='/'>homepage</a>");
 	}
-  $userId = $args['id'];
-  $tasks = getUserTasks($userId, $myPDO);
-  $user = getUser($userId, $myPDO);
-  $arr = ['tasks' => $tasks, 'user' => $user];
+	$userId = $args['id'];
+	$tasks = getUserTasks($userId, $myPDO);
+	$user = getUser($userId, $myPDO);
+	$arr = ['tasks' => $tasks, 'user' => $user];
 
-  return $this->get('renderer')->render($response, 'admin/user-tasks.php', $arr);
+	return $this->get('renderer')->render($response, 'admin/user-tasks.php', $arr);
 });
 
 $app->delete('/admin/{id}', function ($request, $response, array $args) use ($myPDO) {
@@ -182,7 +199,6 @@ $app->patch('/admin/{id}', function ($request, $response, array $args) use ($myP
 	}
 
 	return $response->withRedirect('/admin', 301);
-
 
 });
 

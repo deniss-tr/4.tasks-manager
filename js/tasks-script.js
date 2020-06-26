@@ -19,24 +19,24 @@ function editTask(taskId, text, status = ''){
 }
 
 function editSubmitListener(e){
-  e.preventDefault();
+	e.preventDefault();
   let task = this.closest('.task'),
-    btns = task.querySelector('.btns'),
-    textElem = task.querySelector('.task-text-inner'),
-    taskText = textElem.textContent,
-    taskTextInner = task.querySelector('.task-text-inner'),
-    taskId = btns.getAttribute('task_id'),
-    editBtn = btns.querySelector('.btn-outline-warning'),
-    editFormDiv = task.querySelector('.edit-form-div');
+	btns = task.querySelector('.btns'),
+	textElem = task.querySelector('.task-text-inner'),
+	taskText = textElem.textContent,
+	taskTextInner = task.querySelector('.task-text-inner'),
+	taskId = btns.getAttribute('task_id'),
+	editBtn = btns.querySelector('.btn-outline-warning'),
+	editFormDiv = task.querySelector('.edit-form-div');
 
   let inputText = task.querySelector('.edit-text-input');
   let text = inputText.value;
 
-  editTask(taskId, text);
-  taskTextInner.textContent = text;
-  editBtn.classList.remove('active');
-  taskTextInner.classList.remove('hide');
-  editFormDiv.classList.add('hide');
+	editTask(taskId, text);
+	taskTextInner.textContent = text;
+	editBtn.classList.remove('active');
+	taskTextInner.classList.remove('hide');
+	editFormDiv.classList.add('hide');
 }
 
 editSubmit.forEach((editBtn) => {
@@ -56,11 +56,11 @@ function deleteListener(){
   task.remove();
 }
 
-function clickDelete() {
-  deleteBtn.forEach((item) => {
-    item.addEventListener('click', deleteListener);
-  });
-}
+
+deleteBtn.forEach((item) => {
+	item.addEventListener('click', deleteListener);
+});
+
 function doneListener(){
 
   let task = this.closest('.task');
@@ -84,11 +84,11 @@ function doneListener(){
     editTask(taskId, taskText, '');
   }
 }
-function clickDone() {
-  doneBtns.forEach((btn) => {
-    btn.addEventListener('click', doneListener);
-  });
-}
+
+doneBtns.forEach((btn) => {
+	btn.addEventListener('click', doneListener);
+});
+
 
 function editListener(){
   let task = this.closest('.task');
@@ -106,11 +106,11 @@ function editListener(){
     editFormDiv.classList.remove('hide');
   }
 }
-function clickEdit(){
-  editBtns.forEach((btn) => {
-    btn.addEventListener('click', editListener);
-  });
-}
+
+editBtns.forEach((btn) => {
+	btn.addEventListener('click', editListener);
+});
+
 
 addBtn.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -171,6 +171,3 @@ addBtn.addEventListener('submit', async (e) => {
   if(!content.task_id) alert('Failure adding task');
 })
 
-clickDone();
-clickDelete();
-clickEdit();

@@ -1,7 +1,6 @@
 <?php
 function console_log($output, $with_script_tags = true) {
-    $js_code = 'console.log(' . json_encode($output, JSON_HEX_TAG) .
-');';
+    $js_code = 'console.log(' . json_encode($output, JSON_HEX_TAG) .');';
     if ($with_script_tags) {
         $js_code = '<script>' . $js_code . '</script>';
     }
@@ -24,10 +23,10 @@ function register($myPDO, $login, $password)
 	} else {
 		$message = "Sorry this login already taken";
 	}
-
 	return false;
 
 }
+
 function login($myPDO, $login, $password)
 {
 	global $message;
@@ -39,19 +38,20 @@ function login($myPDO, $login, $password)
 	}
 	return ['id' => $row['id'], 'status' => $row['status']];
 }
-
 function getUserTasks($id, $myPDO)
 {
 	$query = "SELECT * FROM tasks WHERE $id = user_id";
 	$rows = $myPDO->query($query)->fetchAll();
 	return $rows;
 }
+
 function getUser($id, $myPDO)
 {
   $query = "SELECT * FROM users WHERE $id = id";
   $row = $myPDO->query($query)->fetch();
   return $row;
 }
+
 function addTasks($text, $user_id, $status, $myPDO)
 {
 	$text = trim($text);
@@ -76,9 +76,9 @@ function deleteTask($id, $user_id, $myPDO)
 	$res = $myPDO->query("DELETE FROM tasks WHERE $user_id = user_id AND $id = id");
 	if(!$res)
 		return false;
-
 	return true;
 }
+
 /////////////////////// admin
 
 function getAllUsers($myPDO)
@@ -102,19 +102,25 @@ function getAllUsers($myPDO)
 
 	return $usersWithTasks;
 }
+
 function deleteUser($userId, $myPDO)
 {
+	if($userId == 1){
+		return false;
+	}
 	$myPDO->query("DELETE FROM tasks WHERE $userId = user_id");
 	$res = $myPDO->query("DELETE FROM users WHERE $userId = id");
 
 	if(!$res)
 		return false;
-
 	return true;
 }
 
 function changeStatus($userId, $myPDO)
 {
+	if($userId == 1){
+		return false;
+	}
 	$res = $myPDO->query("
 		UPDATE users SET status = CASE
 			WHEN status = 'admin' THEN 'user'
